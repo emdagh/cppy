@@ -2,15 +2,13 @@
 //
 //
 //attempt at copying: http://neuralnetworksanddeeplearning.com/chap1.html
-////
-#include <datetime.h>
 #include <vector>
 #include <cstdint>
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
 #define _DEBUG
-#include <log.h>
+#include "log.h"
 
 #include <algorithm>
 #include "aligned_allocator.h"
@@ -25,11 +23,11 @@
 #include <algorithm>
 #include <iterator>
 #include <iostream>
-#include "range.hpp"
-#include "zip.hpp"
-#include "split.hpp"
+#include "range.h"
+#include "zip.h"
+#include "split.h"
 
-#include "tensor.hpp"
+//#include "tensor.hpp"
 #define argmax(x)   std::max_element(((x)).begin(), ((x)).end())
 
 
