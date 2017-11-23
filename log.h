@@ -39,7 +39,7 @@ namespace io {
     public:
         logstream(std::ostream& out, const std::string& context, loglevel logl=loglevel::all) 
         : _out(out)
-        , _dtstring("%Y%m%d %H:%M:%S") 
+        , _dtstring("%F %T) //%Y%m%d %H:%M:%S") 
         , _context(context)
         , _curlevel(loglevel::none)
         , _loglevel(logl)
@@ -56,7 +56,7 @@ namespace io {
 
         static std::string logline(const std::string& what) {
             std::stringstream os;
-            os << MAGENTA << date::format("%F %T", std::chrono::system_clock::now()) << RESET << " ";
+            os << MAGENTA << date::format(_dtstring, std::chrono::system_clock::now()) << RESET << " ";
             os << std::string(_depth, ' ');
             //os << std::setfill(' ') << std::setw(1) << " ";
             os << what;
@@ -89,21 +89,21 @@ namespace io {
         logstream & operator<<(logstream_manip manip) { return manip(*this); }
     };
 
-        template <typename R>
-        static std::string value_of(const std::string& name, const R& val, bool print_type=false) {
-            std::stringstream ss;
-            ss << RESET << name;
-            if(print_type) {
-                int status = 0;
-                auto ti = typeid(val).name();
-                auto realname = abi::__cxa_demangle(ti, 0, 0, &status);
-                ss << " (" << WHITE << realname << RESET << ")";
-            }
-            ss << "=[" << BLUE << val << RESET << "]";
-            return ss.str();
+    template <typename R>
+    static std::string value_of(const std::string& name, const R& val, bool print_type=false) {
+        std::stringstream ss;
+        ss << RESET << name;
+        if(print_type) {
+            int status = 0;
+            auto ti = typeid(val).name();
+            auto realname = abi::__cxa_demangle(ti, 0, 0, &status);
+            ss << " (" << WHITE << realname << RESET << ")";
         }
+        ss << "=[" << BLUE << val << RESET << "]";
+        return ss.str();
+    }
 
-        std::size_t logstream::_depth = 0;
+    std::size_t logstream::_depth = 0;
 
     //logstream& operator << (logstream& out, logstream::level lvl);
 }
