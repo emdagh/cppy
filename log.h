@@ -6,7 +6,7 @@
 #include <iterator>
 #include <iostream>
 #include <iomanip>
-#include <sys/time.h> // non-portable..
+#include <date.h>
 
 #define RESET   "\033[0m"
 #define BLACK   "\033[30m"      /* Black */
@@ -32,40 +32,58 @@ namespace io {
     class logstream : public std::ostringstream {
         std::ostream& _out;
         std::string _dtstring;
+        std::string _context;
         loglevel _curlevel;
+        loglevel _loglevel;
+        static std::size_t _depth;
     public:
-        logstream(std::ostream& out) : _out(out), _dtstring("%Y%m%d %H:%M:%S") {
+        logstream(std::ostream& out, const std::string& context, loglevel logl=loglevel::all) 
+        : _out(out)
+        , _dtstring("%Y%m%d %H:%M:%S") 
+        , _context(context)
+        , _curlevel(loglevel::none)
+        , _loglevel(logl)
+        {
+            _out << logline((RED "+" RESET) + _context) << std::endl;
+            _depth++;
         }
 
         virtual ~logstream() {
             flush();
+            _depth--;
+            _out << logline((RED "-" RESET) + _context) << std::endl;
+        }
+
+        static std::string logline(const std::string& what) {
+            std::stringstream os;
+            os << MAGENTA << date::format("%F %T", std::chrono::system_clock::now()) << RESET << " ";
+            os << std::string(_depth, ' ');
+            //os << std::setfill(' ') << std::setw(1) << " ";
+            os << what;
+            return os.str();
+            //os.flush();
         }
 
         void flush() {
-            _out << str();
-            _out.flush();
+            if(_curlevel <= _loglevel) {
+                _out << logline(str());
+            }
             str("");
             _curlevel = loglevel::none;
         }
-        /**
-        template <typename S> 
-        logstream& operator << (const S& t) {
-            (*reinterpret_cast<std::ostringstream*>(this)) << t;
-            return *this;
-        }*/
 
         template <typename T>
-        inline logstream & operator<<( const T & t )
+        inline logstream& operator << (const T& t)
         {
             (*(std::ostringstream*)this) << t;
             return *this;
         }
 
-        /**
+        
         logstream& operator << (const loglevel& l) {
             _curlevel = l;
             return *this;
-        }*/
+        }
 
         typedef logstream & (*logstream_manip)(logstream &);
         logstream & operator<<(logstream_manip manip) { return manip(*this); }
@@ -85,11 +103,9 @@ namespace io {
             return ss.str();
         }
 
+        std::size_t logstream::_depth = 0;
 
     //logstream& operator << (logstream& out, logstream::level lvl);
-#define DEBUG_METHOD()              io::logstream __logstream(std::cout)
-#define DEBUG_VALUE_OF(x)           __logstream << io::value_of(#x, x, false) << std::endl
-#define DEBUG_VALUE_AND_TYPE_OF(x)  __logstream << io::value_of(#x, x, true) << std::endl
 }
 namespace std { 
     io::logstream & endl(io::logstream & out) { 
@@ -98,3 +114,7 @@ namespace std {
         return out; 
     } 
 }
+
+#define DEBUG_METHOD()              io::logstream __logstream(std::cout, __FUNCTION__) //; DEBUG_VALUE_OF(__FUNCTION__)
+#define DEBUG_VALUE_OF(x)           __logstream << io::loglevel::info << io::value_of(#x, x, false) << std::endl
+#define DEBUG_VALUE_AND_TYPE_OF(x)  __logstream << io::loglevel::info << io::value_of(#x, x, true) << std::endl
