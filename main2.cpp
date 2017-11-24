@@ -2,7 +2,9 @@
 #include <valarray>
 #include "log.h"
 #include "range.h"
+#include "linear_regression.h"
 #include <prettyprint.hpp>
+
 typedef std::valarray<std::size_t> uivalarray;
 
 template <typename T, size_t N>
@@ -114,10 +116,12 @@ public:
             
 };
 
-
+#include "csv.hpp"
+#include <fstream>
 
 int main(int argc, char* argv[]) {
     DEBUG_METHOD();
+#if 0
     constexpr int N = 3;
     std::array<int, N> ia = { 0, 0, 0 };
     std::array<int, N> ib = { 3, 3, 1 };
@@ -137,7 +141,19 @@ int main(int argc, char* argv[]) {
         //DEBUG_VALUE_OF(a[indexnd(ib, xi)]);
 
     }
-    
+#else
+    typedef std::tuple<float, float> row_type;
+    std::ifstream fin("data/ex1data1.txt");
+    if(fin.is_open()) {
+
+        csv::reader<float, float> rd(fin);
+        for(auto it=rd.begin(); it != rd.end(); ++it) {
+            DEBUG_VALUE_OF(*it);
+        }
+
+        fin.close();
+    }
+#endif
 
     return 0;
 }

@@ -56,7 +56,7 @@ namespace io {
 
         static std::string logline(const std::string& what) {
             std::stringstream os;
-            os << MAGENTA << date::format(_dtstring, std::chrono::system_clock::now()) << RESET << " ";
+            os << MAGENTA << date::format("%F %T", std::chrono::system_clock::now()) << RESET << " ";
             os << std::string(_depth, ' ');
             //os << std::setfill(' ') << std::setw(1) << " ";
             os << what;
