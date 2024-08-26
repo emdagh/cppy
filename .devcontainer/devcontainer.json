@@ -1,0 +1,24 @@
+{
+    "name": "nRF Connect SDK devcontainer",
+    "image": "nordicplayground/nrfconnect-sdk:v2.5-branch",
+    "privileged": true,
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "nrf-connect.deviceProvider": "nrfjprog"
+            },
+            "extensions": [
+                "ms-vscode-remote.remote-containers",
+                "nordic-semiconductor.nrf-connect",
+                "ms-vscode.cpptools-extension-pack"
+            ]
+        }
+    },
+    "remoteEnv": {
+        "NRFJPROG": "nrfjprog",
+        "NRF_CONNECT_SDK_PATH": "/opt/nrfconnect-sdk",
+        "NRF_SDK_VERSION": "2.5.0"
+    },
+    "workspaceFolder": "/workdir/project",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workdir/project,type=bind"
+}

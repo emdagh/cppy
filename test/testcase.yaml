@@ -1,0 +1,12 @@
+tests:
+  sample.testing.ztest:
+    build_only: false
+    platform_allow: 
+      - native_posix
+      - native_sim
+      - nrf9160dk_nrf9160_ns
+    integration_platforms: 
+      - native_sim
+      - nrf9160dk_nrf9160_ns
+    tags: cpp, framework_test
+      #type: unit
